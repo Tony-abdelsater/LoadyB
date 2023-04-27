@@ -45,4 +45,4 @@ To choose a balancing algorithm, set the `method_choice` variable in `load_balan
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the ESIB License .
