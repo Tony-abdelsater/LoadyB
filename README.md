@@ -31,7 +31,7 @@ This is a simple load balancer implementation that distributes incoming requests
 To configure the backend servers, edit the `servers` variable in `load_balancer.py`. The `servers` variable is a list of tuples where each tuple represents a server and its port number. For example, to add a server at IP address 192.168.1.100 on port 8000, add the following tuple to the `servers` list:
 
 ```
-('192.168.1.100', 8000)
+my_server = Server(port=8080, max_connections=5)
 ```
 
 ### Balancing Algorithms
