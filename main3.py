@@ -73,17 +73,6 @@ class LoadyB:
         self.restart_button = tk.Button(self.root, text="Restart", command=self.restart)
         self.restart_button.pack(side=tk.RIGHT)
 
-        #
-        # self.server1_button = tk.Button(self.root, text="Send Request to Server 1", command=lambda: self.send_request(0))
-        # self.server1_button.pack(side=tk.LEFT)
-        #
-        # self.server2_button = tk.Button(self.root, text="Send Request to Server 2", command=lambda: self.send_request(1))
-        # self.server2_button.pack(side=tk.LEFT)
-        #
-        # self.server3_button = tk.Button(self.root, text="Send Request to Server 3", command=lambda: self.send_request(2))
-        # self.server3_button.pack(side=tk.LEFT)
-        #
-
 
 
         self.root['bg'] = "#DDA0DD"
@@ -124,7 +113,7 @@ class LoadyB:
 
 
     def cancel_requests(self):
-        # Prompt user for server index
+
         server_index = simpledialog.askinteger("Cancel Requests",
                                                "Enter server index (1-{}): ".format(self.num_servers))
 
@@ -208,44 +197,43 @@ import socket
 import time
 
 class Server(threading.Thread):
-    def __init__(self, port, max_connections=None):
+    def __init__(self, port):
         threading.Thread.__init__(self)
         self.port = port
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server_socket.bind((socket.gethostname(), port))
         self.server_socket.listen(5)
         self.running = False
-        self.connections = 0
-        self.max_connections = max_connections
 
     def run(self):
         self.running = True
         while self.running:
-            try:
-                client_socket, address = self.server_socket.accept()
-                self.connections += 1
-                print(f"Connection from {address} has been established! (total connections: {self.connections})")
-                client_socket.send(bytes("Welcome to the Server!", "utf-8"))
-                client_socket.close()
-                if self.max_connections is not None and self.connections >= self.max_connections:
-                    raise socket.timeout
-            except socket.timeout:
-                print(f"Maximum number of connections ({self.max_connections}) reached!")
-                self.server_socket.close()
-                break
+            client_socket, address = self.server_socket.accept()
+            print(f"Connection from {address} has been established!")
+            client_socket.send(bytes("Welcome to the Server!", "utf-8"))
+            client_socket.close()
 
     def stop(self):
         self.running = False
         self.server_socket.close()
 
-my_server = Server(port=8080, max_connections=5)
-my_server.start()
-server = Server(8787)
-server.start()
-server = Server(7676)
+server = Server(7219)
 server.start()
 
-serversss = [8080, 8787, 7676]
+server = Server(7129)
+
+server.start()
+
+server = Server(7139)
+server.start()
+
+
+
+
+
+
+
+serversss = [7219,7129,7139]
 
 
 LoadyB(serversss)
