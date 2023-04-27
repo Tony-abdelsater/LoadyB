@@ -13,6 +13,8 @@ from tkinter import font
 
 
 
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+
 class LoadyB:
     def __init__(self, servers):
         self.servers = servers
@@ -27,7 +29,7 @@ class LoadyB:
 
         self.label = tk.Label(self.root, text="LoadyB", font=self.round)
         self.label.config(fg="#D3D3D3", font=("Brush Script MT", 30, "italic"))
-        self.label.pack()
+        self.label.pack(pady=10)
 
         self.fig = plt.Figure(figsize=(6, 5), dpi=100)
         self.ax = self.fig.add_subplot(111)
@@ -35,52 +37,53 @@ class LoadyB:
         self.index = [1, 2, 3]
 
         self.canvas = FigureCanvasTkAgg(self.fig, self.root)
-        self.canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+        self.canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True, padx=10, pady=10)
 
         self.request_count_entry = tk.Entry(self.root)
-        self.request_count_entry.pack()
+        self.request_count_entry.pack(pady=10)
 
         self.method_choice = tk.StringVar(value="round_robin")
 
         self.method_radio_frame = tk.Frame(self.root)
-        self.method_radio_frame.pack()
+        self.method_radio_frame.pack(pady=10)
 
         self.round_robin_radio = tk.Radiobutton(self.method_radio_frame, text="Round Robin",
                                                 variable=self.method_choice, value="round_robin")
-        self.round_robin_radio.pack(side=tk.LEFT)
+        self.round_robin_radio.pack(side=tk.LEFT, padx=5)
 
         self.least_connection_radio = tk.Radiobutton(self.method_radio_frame, text="Least Connection",
                                                      variable=self.method_choice, value="least_connection")
-        self.least_connection_radio.pack(side=tk.LEFT)
+        self.least_connection_radio.pack(side=tk.LEFT, padx=5)
 
         self.least_time_radio = tk.Radiobutton(self.method_radio_frame, text="Least Time", variable=self.method_choice,
                                                value="least_time")
-        self.least_time_radio.pack(side=tk.LEFT)
+        self.least_time_radio.pack(side=tk.LEFT, padx=5)
 
         self.random_radio = tk.Radiobutton(self.method_radio_frame, text="Random", variable=self.method_choice,
                                            value="random")
-        self.random_radio.pack(side=tk.LEFT)
+        self.random_radio.pack(side=tk.LEFT, padx=5)
 
-        self.receive_button = tk.Button(self.root, text="Receive Request", command=self.receive_request)
-        self.receive_button.pack()
+        self.button_frame = tk.Frame(self.root)
+        self.button_frame.pack(pady=10)
 
-        self.cancel_button = tk.Button(self.root, text="Cancel Requests", command=self.cancel_requests)
-        self.cancel_button.pack(side=tk.LEFT)
+        self.receive_button = tk.Button(self.button_frame, text="Receive Request", command=self.receive_request)
+        self.receive_button.pack(side=tk.LEFT, padx=5)
 
-        self.exit_button = tk.Button(self.root, text="Exit", command=self.root.quit)
-        self.exit_button.pack(side=tk.RIGHT)
+        self.cancel_button = tk.Button(self.button_frame, text="Cancel Requests", command=self.cancel_requests)
+        self.cancel_button.pack(side=tk.LEFT, padx=5)
 
-        self.restart_button = tk.Button(self.root, text="Restart", command=self.restart)
-        self.restart_button.pack(side=tk.RIGHT)
+        self.restart_button = tk.Button(self.button_frame, text="Restart", command=self.restart)
+        self.restart_button.pack(side=tk.LEFT, padx=5)
 
-
+        self.exit_button = tk.Button(self.button_frame, text="Exit", command=self.root.quit)
+        self.exit_button.pack(side=tk.LEFT, padx=5)
 
         self.root['bg'] = "#DDA0DD"
 
         self.update_bar_chart()
 
         self.server_listbox = tk.Listbox(self.root)
-        self.server_listbox.pack()
+        self.server_listbox.pack(pady=10)
 
         self.root.mainloop()
 
