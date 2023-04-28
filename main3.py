@@ -1,6 +1,4 @@
-import socket
-import threading
-import time
+
 import random
 import tkinter as tk
 from tkinter import messagebox, simpledialog
@@ -11,9 +9,6 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from tkinter import font
 
-
-
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 class LoadyB:
     def __init__(self, servers):
@@ -75,8 +70,6 @@ class LoadyB:
         self.restart_button = tk.Button(self.button_frame, text="Restart", command=self.restart)
         self.restart_button.pack(side=tk.LEFT, padx=5)
 
-        self.exit_button = tk.Button(self.button_frame, text="Exit", command=self.root.quit)
-        self.exit_button.pack(side=tk.LEFT, padx=5)
 
         self.root['bg'] = "#DDA0DD"
 
@@ -101,7 +94,7 @@ class LoadyB:
 
         total_requests = sum(self.server_request_count)
         if total_requests == 100:
-            messagebox.showinfo(title="Thank You", message="Thank you so much ❤️")
+            messagebox.showinfo(title="Thank You", message="Thank you for 100 requests! ❤️")
 
     def update_server_listbox(self):
         self.server_listbox.delete(0, 'end')
@@ -120,21 +113,18 @@ class LoadyB:
         server_index = simpledialog.askinteger("Cancel Requests",
                                                "Enter server index (1-{}): ".format(self.num_servers))
 
-        # If user canceled the dialog box or entered invalid input, return
+
         if not server_index or server_index <= 0 or server_index > self.num_servers:
             messagebox.showerror("Cancel Requests", "Error: Invalid server index.")
             return
 
-        # Prompt user for number of requests to cancel
         num_cancel_requests = simpledialog.askinteger("Cancel Requests", "Enter number of requests to cancel: ")
-
-        # If user canceled the dialog box or entered invalid input, return
+        
         if not num_cancel_requests or num_cancel_requests <= 0:
             messagebox.showerror("Cancel Requests", "Error: Invalid number of requests.")
             return
 
-        # Update the server request count
-        server_index -= 1  # Adjust index to zero-based
+        server_index -= 1 
         if self.server_request_count[server_index] >= num_cancel_requests:
             self.server_request_count[server_index] -= num_cancel_requests
             self.update_bar_chart()
@@ -149,51 +139,45 @@ class LoadyB:
             request_count = int(self.request_count_entry.get())
         else:
             request_count = 1
-
         for i in range(request_count):
-            while True:
-                try:
-                    if self.method_choice.get() == "round_robin":
-                        self.last_server_used = (self.last_server_used + 1) % self.num_servers
-                    elif self.method_choice.get() == "least_connection":
-                        self.last_server_used = self.server_request_count.index(min(self.server_request_count))
-                    elif self.method_choice.get() == "least_time":
-                        processing_times = []
-                        for j in range(self.num_servers):
-                            if self.server_request_count[j] < 2000000000:
-                                s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                                s.connect((socket.gethostname(), self.servers[j]))
-                                start_time = time.time()
-                                s.send(b"Hello, server!")
-                                response = s.recv(1024)
-                                end_time = time.time()
-                                time_taken = end_time - start_time
-                                processing_times.append(time_taken)
-                                s.close()
-                            else:
-                                processing_times.append(float("inf"))
-                            self.last_server_used = processing_times.index(min(processing_times))
-                    else:   
-                        self.last_server_used = random.randint(0, self.num_servers - 1)
-
-                    if self.server_request_count[self.last_server_used] < 20000000000:
+            if self.method_choice.get() == "round_robin":
+                self.last_server_used = (self.last_server_used + 1) % self.num_servers
+            elif self.method_choice.get() == "least_connection":
+                self.last_server_used = self.server_request_count.index(min(self.server_request_count))
+            elif self.method_choice.get() == "least_time":
+                processing_times = []
+                for j in range(self.num_servers):
+                    if self.server_request_count[j] < 200:
                         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                        s.connect((socket.gethostname(), self.servers[self.last_server_used]))
+                        s.connect((socket.gethostname(), self.servers[j]))
                         start_time = time.time()
                         s.send(b"Hello, server!")
                         response = s.recv(1024)
                         end_time = time.time()
                         time_taken = end_time - start_time
-                        print(f"Request processed in {time_taken} seconds.")
-                        self.server_request_count[self.last_server_used] += 1
-                        break  # Exit the while loop and proceed to the next request
+                        processing_times.append(time_taken)
+                        s.close()
+                    else:
+                        processing_times.append(float("inf"))
+                self.last_server_used = processing_times.index(min(processing_times))
+            else:
+                self.last_server_used = random.randint(0, self.num_servers - 1)
+            if self.server_request_count[self.last_server_used] < 200:
+                s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                s.connect((socket.gethostname(), self.servers[self.last_server_used]))
+                start_time = time.time()
+                s.send(b"Hello, server!")
+                response = s.recv(1024)
+                end_time = time.time()
+                time_taken = end_time - start_time
+                print(f"Request processed in {time_taken} seconds.")
+                self.server_request_count[self.last_server_used] += 1
+                if self.server_request_count[self.last_server_used] == 200:
+                    messagebox.showinfo(title="Server Full", message=f"Server {self.last_server_used + 1} is now full!")
 
-                except (ConnectionRefusedError, TimeoutError):
-                    # The server did not respond, try the next one
-                    self.last_server_used = (self.last_server_used + 1) % self.num_servers
+        self.update_bar_chart()
+        self.update_server_listbox()
 
-            self.update_bar_chart()
-            self.update_server_listbox()
 
 import threading
 import socket
@@ -219,25 +203,18 @@ class Server(threading.Thread):
     def stop(self):
         self.running = False
         self.server_socket.close()
+        
 
-server = Server(7219)
+server = Server(9875)
 server.start()
 
-server = Server(7129)
-
+server = Server(5439)
 server.start()
 
-server = Server(7139)
+server = Server(1123)
 server.start()
 
-
-
-
-
-
-
-serversss = [7219,7129,7139]
-
+serversss = [9875,5439,1123]
 
 LoadyB(serversss)
 
