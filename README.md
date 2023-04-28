@@ -1,4 +1,3 @@
-Sure, here's a sample README file you can use as a guide to create your project's README:
 
 # Load Balancer
 
@@ -15,6 +14,10 @@ This is a simple load balancer implementation that distributes incoming requests
 
 - Python 3.6+
 - Socket module
+- Threading module
+- Tkinter module
+- matpotlib module
+- time module
 
 ## Usage
 
